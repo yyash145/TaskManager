@@ -1,0 +1,27 @@
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# ✅ Copy csproj from backend folder
+COPY backend/*.csproj ./backend/
+
+# ✅ Restore using correct path
+RUN dotnet restore ./backend/backend.csproj
+
+# Copy full source
+COPY . ./
+
+# Move into backend project
+WORKDIR /src/backend
+
+RUN dotnet publish -c Release -o /app/publish
+
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "backend.dll"]

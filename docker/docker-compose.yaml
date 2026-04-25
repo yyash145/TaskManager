@@ -1,0 +1,49 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/DockerFile
+    container_name: backend_api
+    ports:
+      - "8000:8080"
+    depends_on:
+      - sqlserver
+      
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=TaskDb;User=sa;Password=OristoSQLPassword@123;TrustServerCertificate=True
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql_server
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=OristoSQLPassword@123
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+volumes:
+  sql_data:
+
+# set<int> s1, s2, s3;
+#         unordered_map<int, int> mp;
+#         for(int i=0; i<a.size(); i++)
+#             s1.insert(a[i]);
+#         for(int i=0; i<b.size(); i++)
+#             s2.insert(b[i]);
+#         for(int i=0; i<c.size(); i++)
+#             s3.insert(c[i]);
+#         for(int i=0; i<s1.size(); i++)
+#             mp[s1[i]]++;
+#         for(int i=0; i<s2.size(); i++)
+#             mp[s2[i]]++;
+#         for(int i=0; i<s3.size(); i++)
+#             mp[s3[i]]++;
+#         vector<int> ans;
+#         for(auo it: mp){
+#             if(it.second >= 3)
+#                 ans.push_back(it.first);
+#         }
+#         return ans;
