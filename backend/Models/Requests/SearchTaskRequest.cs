@@ -4,10 +4,9 @@ using backend.Domain.Enums;
 public class SearchTaskRequest
 {
     public string? Title { get; set; }
+    public string? Description { get; set; }
     public TaskStatus? Status { get; set; }
     public bool? IsCompleted { get; set; }
-
-    // Optional filters (bonus)
-    public DateTime? DueDateFrom { get; set; }
-    public DateTime? DueDateTo { get; set; }
+    public DateTime? DueDate { get; set; }
+    public string? Remarks { get; set; }
 }

@@ -109,14 +109,9 @@ public class TaskService : ITaskService
         }
 
         // Filter by DueDate range
-        if (request.DueDateFrom.HasValue)
+        if (request.DueDate.HasValue)
         {
-            query = query.Where(t => t.DueDate >= request.DueDateFrom.Value);
-        }
-
-        if (request.DueDateTo.HasValue)
-        {
-            query = query.Where(t => t.DueDate <= request.DueDateTo.Value);
+            query = query.Where(t => t.DueDate >= request.DueDate.Value);
         }
 
         return await query
@@ -133,6 +128,11 @@ public class TaskService : ITaskService
         IsCompleted = t.IsCompleted,
         DueDate = t.DueDate,
         Status = t.Status ?? Domain.Enums.TaskStatus.InProgress,
-        Remarks = t.Remarks
+        Remarks = t.Remarks,
+        
+        CreatedOn = t.CreatedOn,
+        CreatedBy = t.CreatedBy,
+        UpdatedOn = t.UpdatedOn,
+        UpdatedBy = t.UpdatedBy
     };
 }

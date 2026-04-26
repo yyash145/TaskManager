@@ -3,7 +3,6 @@ using backend.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 namespace backend.Controllers;
 
 [Authorize]
@@ -19,7 +18,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateTaskRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateTaskRequest request)
     {
         var result = await _service.CreateAsync(request);
         return Ok(ApiResponse<TaskResponse>
@@ -45,10 +44,12 @@ public class TasksController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateTaskRequest request)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTaskRequest request)
     {
         var updated = await _service.UpdateAsync(id, request);
-        return updated ? Ok() : NotFound(new { message = "Task not found" });
+        return updated 
+            ? Ok(ApiResponse<string>.SuccessResponse("Record Updated successfully")) 
+            : NotFound(new { message = "Task not found" });
     }
 
     [HttpDelete("{id}")]
@@ -60,8 +61,8 @@ public class TasksController : ControllerBase
             : NotFound(ApiResponse<string>.FailureResponse("Task not found"));
     }
 
-    [HttpPost("search")]
-    public async Task<IActionResult> Search([FromBody] SearchTaskRequest request)
+    [HttpGet("search")]
+    public async Task<IActionResult> Search([FromQuery] SearchTaskRequest request)
     {
         var result = await _service.SearchAsync(request);
 

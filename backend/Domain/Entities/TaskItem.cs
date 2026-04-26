@@ -40,7 +40,9 @@ public class TaskItem
 
         UserId = userId;
         CreatedBy = userId;
+        UpdatedBy = userId;
         CreatedOn = DateTime.UtcNow;
+        UpdatedOn = DateTime.UtcNow;
     }
 
     public void Update(string title,
