@@ -3,11 +3,12 @@ using backend.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 namespace backend.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/task")]
 public class TasksController : ControllerBase
 {
     private readonly ITaskService _service;

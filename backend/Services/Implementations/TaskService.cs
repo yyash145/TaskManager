@@ -1,5 +1,6 @@
 using backend.Data;
-using backend.Entities;
+using backend.Domain.Enums;
+using backend.Domain.Entities;
 using backend.Models.Requests;
 using backend.Models.Response;
 using backend.Services.Interfaces;
@@ -24,7 +25,7 @@ public class TaskService : ITaskService
             request.Description,
             request.IsCompleted,
             request.DueDate,
-            request.Status,
+            request.Status ?? Domain.Enums.TaskStatus.InProgress,
             request.Remarks,
             _currentUser.UserId
         );
@@ -38,19 +39,23 @@ public class TaskService : ITaskService
     public async Task<List<TaskResponse>> GetAllAsync()
     {
         return await _context.Tasks
+            .Where(t => t.UserId == _currentUser.UserId)
             .Select(t => Map(t))
             .ToListAsync();
     }
 
     public async Task<TaskResponse?> GetByIdAsync(Guid id)
     {
-        var task = await _context.Tasks.FindAsync(id);
+        var task = await _context.Tasks.
+            FirstOrDefaultAsync(t => t.Id == id && t.UserId == _currentUser.UserId);
         return task == null ? null : Map(task);
     }
 
     public async Task<bool> UpdateAsync(Guid id, UpdateTaskRequest request)
     {
-        var task = await _context.Tasks.FindAsync(id);
+        var task = await _context.Tasks.
+            FirstOrDefaultAsync(t => t.Id == id && t.UserId == _currentUser.UserId);
+        
         if (task == null) return false;
 
         task.Update(
@@ -58,7 +63,7 @@ public class TaskService : ITaskService
             request.Description,
             request.IsCompleted,
             request.DueDate,
-            request.Status,
+            request.Status ?? Domain.Enums.TaskStatus.InProgress,
             request.Remarks,
             _currentUser.UserId
         );
@@ -69,7 +74,8 @@ public class TaskService : ITaskService
 
     public async Task<bool> DeleteAsync(Guid id)
     {
-        var task = await _context.Tasks.FindAsync(id);
+        var task = await _context.Tasks.
+            FirstOrDefaultAsync(t => t.Id == id && t.UserId == _currentUser.UserId);
         if (task == null) return false;
 
         _context.Tasks.Remove(task);
@@ -79,7 +85,9 @@ public class TaskService : ITaskService
 
     public async Task<List<TaskResponse>> SearchAsync(SearchTaskRequest request)
     {
-        var query = _context.Tasks.AsQueryable();
+        var query = _context.Tasks
+            .Where(t => t.UserId == _currentUser.UserId)
+            .AsQueryable();
 
         // Filter by Title (case-insensitive)
         if (!string.IsNullOrWhiteSpace(request.Title))
@@ -89,9 +97,9 @@ public class TaskService : ITaskService
         }
 
         // Filter by Status
-        if (!string.IsNullOrWhiteSpace(request.Status))
+        if (request.Status.HasValue)
         {
-            query = query.Where(t => t.Status == request.Status);
+            query = query.Where(t => t.Status == request.Status.Value);
         }
 
         // Filter by completion
@@ -122,6 +130,9 @@ public class TaskService : ITaskService
         Id = t.Id,
         Title = t.Title,
         Description = t.Description,
-        IsCompleted = t.IsCompleted
+        IsCompleted = t.IsCompleted,
+        DueDate = t.DueDate,
+        Status = t.Status ?? Domain.Enums.TaskStatus.InProgress,
+        Remarks = t.Remarks
     };
 }

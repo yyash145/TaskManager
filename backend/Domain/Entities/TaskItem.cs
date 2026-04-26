@@ -1,4 +1,5 @@
-namespace backend.Entities;
+namespace backend.Domain.Entities;
+using backend.Domain.Enums;
 
 public class TaskItem
 {
@@ -8,8 +9,9 @@ public class TaskItem
     public string? Description { get; private set; }
     public bool IsCompleted { get; private set; }
     public DateTime? DueDate { get; private set; }
-    public string? Status { get; private set; }
+    public TaskStatus? Status { get; private set; } = TaskStatus.Pending;
     public string? Remarks { get; private set; }
+    public Guid UserId { get; private set; }
 
     public DateTime CreatedOn { get; private set; } = DateTime.UtcNow;
     public DateTime UpdatedOn { get; private set; } = DateTime.UtcNow;
@@ -25,7 +27,7 @@ public class TaskItem
         string? description,
         bool isCompleted,
         DateTime? dueDate,
-        string? status,
+        TaskStatus status,
         string? remarks,
         Guid userId)
     {
@@ -36,15 +38,16 @@ public class TaskItem
         Status = status;
         Remarks = remarks;
 
+        UserId = userId;
         CreatedBy = userId;
-        UpdatedBy = userId;
+        CreatedOn = DateTime.UtcNow;
     }
 
     public void Update(string title,
         string? description,
         bool isCompleted,
         DateTime? dueDate,
-        string? status,
+        TaskStatus status,
         string? remarks,
         Guid userId)
     {
@@ -55,7 +58,7 @@ public class TaskItem
         Status = status;
         Remarks = remarks;
 
-        UpdatedOn = DateTime.UtcNow;
         UpdatedBy = userId;
+        UpdatedOn = DateTime.UtcNow;
     }
 }

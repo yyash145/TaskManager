@@ -1,6 +1,6 @@
 using backend.Models.Requests;
 using backend.Models.Response;
-using backend.Entities;
+using backend.Domain.Entities;
 using backend.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -26,9 +26,27 @@ public class AuthService : IAuthService
     // ✅ REGISTER
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
     {
+        var existingEmail = await _context.Users
+            .AnyAsync(u => u.Email == request.Email);
+
+        if (existingEmail)
+            throw new Exception("Email already exists");
+
+        // 🔴 Handle username (auto-generate if missing)
+        var username = string.IsNullOrWhiteSpace(request.Username)
+            ? await GenerateUniqueUsername()
+            : request.Username;
+
+        // 🔴 Check duplicate username
+        var existingUsername = await _context.Users
+            .AnyAsync(u => u.Username == username);
+
+        if (existingUsername)
+            throw new Exception("Username already exists");
+        
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-        var user = new User(request.Username, request.Email, passwordHash);
+        var user = new User(username, request.Email, passwordHash);
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
@@ -108,5 +126,22 @@ public class AuthService : IAuthService
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    private async Task<string> GenerateUniqueUsername()
+    {
+        string username;
+        bool exists;
+
+        do
+        {
+            username = $"user_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+
+            exists = await _context.Users
+                .AnyAsync(u => u.Username == username);
+
+        } while (exists);
+
+        return username;
     }
 }

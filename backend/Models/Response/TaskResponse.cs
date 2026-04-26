@@ -1,3 +1,5 @@
+using backend.Domain.Enums;
+
 namespace backend.Models.Response;
 
 public class TaskResponse
@@ -7,8 +9,10 @@ public class TaskResponse
     public string? Description { get; set; }
     public bool IsCompleted { get; set; }
     public DateTime? DueDate { get; set; }
-    public string? Status { get; set; }
+    public Domain.Enums.TaskStatus? Status { get; set; }
     public string? Remarks { get; set; }
     public DateTime CreatedOn { get; set; }
+    public string CreatedBy { get; set; }
     public DateTime UpdatedOn { get; set; }
+    public string UpdatedBy { get; set; }
 }
