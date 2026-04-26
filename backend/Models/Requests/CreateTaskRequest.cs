@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace backend.Models.Requests;
 
 public class CreateTaskRequest
 {
+    [Required]
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public bool IsCompleted { get; set; } = false;

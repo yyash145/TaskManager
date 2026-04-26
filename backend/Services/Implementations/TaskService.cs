@@ -77,6 +77,46 @@ public class TaskService : ITaskService
         return true;
     }
 
+    public async Task<List<TaskResponse>> SearchAsync(SearchTaskRequest request)
+    {
+        var query = _context.Tasks.AsQueryable();
+
+        // Filter by Title (case-insensitive)
+        if (!string.IsNullOrWhiteSpace(request.Title))
+        {
+            query = query.Where(t =>
+                t.Title.ToLower().Contains(request.Title.ToLower()));
+        }
+
+        // Filter by Status
+        if (!string.IsNullOrWhiteSpace(request.Status))
+        {
+            query = query.Where(t => t.Status == request.Status);
+        }
+
+        // Filter by completion
+        if (request.IsCompleted.HasValue)
+        {
+            query = query.Where(t => t.IsCompleted == request.IsCompleted.Value);
+        }
+
+        // Filter by DueDate range
+        if (request.DueDateFrom.HasValue)
+        {
+            query = query.Where(t => t.DueDate >= request.DueDateFrom.Value);
+        }
+
+        if (request.DueDateTo.HasValue)
+        {
+            query = query.Where(t => t.DueDate <= request.DueDateTo.Value);
+        }
+
+        return await query
+            .OrderByDescending(t => t.CreatedOn)
+            .Select(t => Map(t))
+            .ToListAsync();
+    }
+
     public static TaskResponse Map(TaskItem t) => new()
     {
         Id = t.Id,
