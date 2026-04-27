@@ -28,13 +28,11 @@ const TaskPage = () => {
       return;
     }
 
-    // 🔥 map status → isCompleted
     const payload = {
       title: form.title,
       description: form.description,
       dueDate: form.dueDate || null,
       remarks: form.remarks,
-      isCompleted: form.status === "Completed",
     };
 
     console.log("Sending payload:", payload);
