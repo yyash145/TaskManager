@@ -23,7 +23,6 @@ public class TaskService : ITaskService
         var entity = new TaskItem(
             request.Title,
             request.Description,
-            request.IsCompleted,
             request.DueDate,
             request.Status ?? Domain.Enums.TaskStatus.InProgress,
             request.Remarks,
@@ -61,7 +60,6 @@ public class TaskService : ITaskService
         task.Update(
             request.Title,
             request.Description,
-            request.IsCompleted,
             request.DueDate,
             request.Status ?? Domain.Enums.TaskStatus.InProgress,
             request.Remarks,
@@ -102,12 +100,6 @@ public class TaskService : ITaskService
             query = query.Where(t => t.Status == request.Status.Value);
         }
 
-        // Filter by completion
-        if (request.IsCompleted.HasValue)
-        {
-            query = query.Where(t => t.IsCompleted == request.IsCompleted.Value);
-        }
-
         // Filter by DueDate range
         if (request.DueDate.HasValue)
         {
@@ -125,7 +117,6 @@ public class TaskService : ITaskService
         Id = t.Id,
         Title = t.Title,
         Description = t.Description,
-        IsCompleted = t.IsCompleted,
         DueDate = t.DueDate,
         Status = t.Status ?? Domain.Enums.TaskStatus.InProgress,
         Remarks = t.Remarks,

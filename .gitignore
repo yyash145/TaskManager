@@ -1,0 +1,9 @@
+./Oristo.sln
+
+frontend/node_modules
+frontend/package-lock.json
+
+docker/.env
+
+backend/bin
+backend/obj

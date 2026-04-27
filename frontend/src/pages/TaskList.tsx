@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Task } from "../models/task";
 import { getAllTasks, deleteTask, updateTask, searchTasks } from "../services/taskApi";
-import "../index";
+import "../index"
 
 const TaskList = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -54,7 +54,6 @@ const TaskList = () => {
             description: editForm.description,
             dueDate: editForm.dueDate || null,
             remarks: editForm.remarks,
-            isCompleted: editForm.status === "Completed",
         };
 
         await updateTask(id, payload);

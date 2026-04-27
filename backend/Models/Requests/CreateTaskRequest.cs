@@ -8,7 +8,6 @@ public class CreateTaskRequest
     [Required]
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public bool IsCompleted { get; set; } = false;
     public DateTime? DueDate { get; set; }
     public Domain.Enums.TaskStatus? Status { get; set; } = Domain.Enums.TaskStatus.Pending;
     public string? Remarks { get; set; }
