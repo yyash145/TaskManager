@@ -13,4 +13,23 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
+axiosInstance.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    console.log("INTERCEPTOR HIT");
+
+    const status = err.response?.status;
+    console.log("STATUS:", status);
+
+    if (status === 401 || status === 403) {
+      console.log("REDIRECTING...");
+      localStorage.removeItem("token");
+      window.location.href = "/auth";
+    }
+
+    return Promise.reject(err);
+  }
+);
+
+
 export default axiosInstance;

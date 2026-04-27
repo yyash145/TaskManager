@@ -29,9 +29,9 @@ PasswordHash     VARCHAR      NOT_NULL
 RefreshTokenHash VARCHAR      NULL
 CreatedOn        DATETIME2
 
-        │ 1                    │ 1
-        │                      │
-        ▼ *                    ▼ *
+                │ 1
+                │
+                ▼ *
 
 Tasks
 ──────────────────────────────────
@@ -138,6 +138,7 @@ docker compose up --build
 
 ```
 cd backend
+dotnet build
 dotnet ef migrations add InitialCreate
 ```
 
@@ -159,16 +160,12 @@ npm start
 ## Features:
 - User Authentication (JWT based)
 - Create, Read, Update, Delete (CRUD) Tasks
-- Task attributes include:
-  - Title
-  - Description
-  - Due Date
-  - Status (Pending / InProgress / Completed)
-  - Remarks
-  - Created / Updated timestamps
-  - Created By / Updated By tracking
 - Search and Filter functionality
-- Role-based extensible architecture (future scope)
+- When task is created, status is always Pending
+- When task is updated, status is always InProgress
+- When status became Completed, task become Completed (by using IsComplete flag)
+- Search Functionality is for all the fields.
+- Created and Updated fields are not visible in the UI (depends on business requirement)
 
 ## Things to consider
 
