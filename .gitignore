@@ -7,3 +7,5 @@ docker/.env
 
 backend/bin
 backend/obj
+backend/*csproj
+backend/*.http
