@@ -6,7 +6,7 @@ public class RegisterRequest
 {
     public string? Username {get; set;}
     [Required]
-    public string? Email { get; set; }
+    public string Email { get; set; } = String.Empty;
     [Required]
     public string? Password { get; set; }
 }    

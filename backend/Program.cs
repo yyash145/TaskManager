@@ -5,6 +5,7 @@ using backend.Extensions;
 using backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using backend.Services.Implementations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,7 +34,13 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITaskService, TaskService>(); // if exists
 // builder.Services.AddScoped<ITokenService, TokenService>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter()
+        );
+    });
 
 // Add DB Context
 builder.Services.AddDbContext<AppDbContext>(options =>

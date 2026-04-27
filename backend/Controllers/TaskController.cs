@@ -3,6 +3,7 @@ using backend.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using System.Data;
 namespace backend.Controllers;
 
 [Authorize]
@@ -20,9 +21,18 @@ public class TasksController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTaskRequest request)
     {
-        var result = await _service.CreateAsync(request);
-        return Ok(ApiResponse<TaskResponse>
-            .SuccessResponse(result, "Task created successfully"));
+        try
+        {
+            var result = await _service.CreateAsync(request);
+
+            return StatusCode(201,
+                ApiResponse<TaskResponse>
+                    .SuccessResponse(result, "Task created successfully"));
+        }
+        catch (DuplicateNameException ex)
+        {
+            return Conflict(ApiResponse<string>.FailureResponse(ex.Message));
+        }
     }
 
     [HttpGet]
@@ -46,10 +56,19 @@ public class TasksController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTaskRequest request)
     {
-        var updated = await _service.UpdateAsync(id, request);
-        return updated 
-            ? Ok(ApiResponse<string>.SuccessResponse("Record Updated successfully")) 
-            : NotFound(new { message = "Task not found" });
+        try
+        {
+            var updated = await _service.UpdateAsync(id, request);
+
+            return updated
+                ? Ok(ApiResponse<string>.SuccessResponse("Record updated successfully"))
+                : NotFound(ApiResponse<string>.FailureResponse("Task not found"));
+        }
+        catch (DuplicateNameException ex)
+        {
+            return Conflict(
+                ApiResponse<string>.FailureResponse(ex.Message));
+        }
     }
 
     [HttpDelete("{id}")]

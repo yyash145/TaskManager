@@ -5,6 +5,7 @@ using backend.Models.Requests;
 using backend.Models.Response;
 using backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace backend.Services.Implementations;
 
@@ -20,11 +21,23 @@ public class TaskService : ITaskService
 
     public async Task<TaskResponse> CreateAsync(CreateTaskRequest request)
     {
+        var exists = await _context.Tasks.AnyAsync(t =>
+            t.UserId == _currentUser.UserId &&
+            t.Title.ToLower() == request.Title.ToLower()
+        );
+
+        if (exists)
+        {
+            throw new DuplicateNameException(
+                $"Task with title '{request.Title}' already exists."
+            );
+        }
         var entity = new TaskItem(
             request.Title,
             request.Description,
+            request.IsCompleted,
             request.DueDate,
-            request.Status ?? Domain.Enums.TaskStatus.InProgress,
+            request.Status ?? Domain.Enums.TaskStatus.Pending,
             request.Remarks,
             _currentUser.UserId
         );
@@ -52,14 +65,29 @@ public class TaskService : ITaskService
 
     public async Task<bool> UpdateAsync(Guid id, UpdateTaskRequest request)
     {
-        var task = await _context.Tasks.
-            FirstOrDefaultAsync(t => t.Id == id && t.UserId == _currentUser.UserId);
-        
-        if (task == null) return false;
+        var task = await _context.Tasks
+            .FirstOrDefaultAsync(t => t.Id == id && t.UserId == _currentUser.UserId);
+
+        if (task == null)
+            return false;
+
+        var isDuplicate = await _context.Tasks.AnyAsync(t =>
+            t.UserId == _currentUser.UserId &&
+            t.Title.ToLower() == request.Title.ToLower() &&
+            t.Id != id
+        );
+
+        if (isDuplicate)
+        {
+            throw new DuplicateNameException(
+                $"Task with title '{request.Title}' already exists."
+            );
+        }
 
         task.Update(
             request.Title,
             request.Description,
+            request.IsCompleted,
             request.DueDate,
             request.Status ?? Domain.Enums.TaskStatus.InProgress,
             request.Remarks,
@@ -100,6 +128,11 @@ public class TaskService : ITaskService
             query = query.Where(t => t.Status == request.Status.Value);
         }
 
+        if (request.IsCompleted.HasValue)
+        {
+            query = query.Where(t => t.IsCompleted == request.IsCompleted.Value);
+        }
+
         // Filter by DueDate range
         if (request.DueDate.HasValue)
         {
@@ -117,6 +150,7 @@ public class TaskService : ITaskService
         Id = t.Id,
         Title = t.Title,
         Description = t.Description,
+        IsCompleted = t.IsCompleted,
         DueDate = t.DueDate,
         Status = t.Status ?? Domain.Enums.TaskStatus.InProgress,
         Remarks = t.Remarks,

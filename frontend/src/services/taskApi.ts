@@ -14,8 +14,10 @@ export const getAllTasks = async (): Promise<Task[]> => {
     id: item.id,
     title: item.title,
     description: item.description,
+    status: item.status,
     dueDate: item.dueDate,
     remarks: item.remarks || "",
+    isCompleted: item.isCompleted ? "Completed" : "Pending",
 
     createdOn: item.createdOn,
     updatedOn: item.updatedOn,

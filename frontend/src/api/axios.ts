@@ -4,20 +4,24 @@ const API = axios.create({
   baseURL: "http://localhost:8000/api",
 });
 
+// REQUEST
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// 🔥 AUTO LOGOUT
+// RESPONSE
 API.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const status = err.response?.status;
+
+    if (status === 401 || status === 403) {
       localStorage.removeItem("token");
-      window.location.href = "/";
+      window.location.replace("/auth");
     }
+
     return Promise.reject(err);
   }
 );

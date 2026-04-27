@@ -53,19 +53,36 @@ UpdatedBy        (FK → AspNetUsers.Id)
 
 | Column | Type | Nullable | Notes |
 |---|---|---|---|
-| Id | INT IDENTITY | No | PK |
+| Id | INT IDENTITY | No | Primary Key |
 | Title | VARCHAR(200) | No | Required |
 | Description | VARCHAR(2000) | Yes | |
 | IsCompleted | Bool | No | Set if a task is Completed |
 | DueDate | DATETIME2 | Yes | Optional deadline |
 | Status | INT | No | 0=Pending, 1=InProgress, 2=Completed |
-| Remarks | VARCHAR(1000) | Yes | Extra notes |
-| CreatedOn | DATETIME2 | No | Set on insert, UTC |
+| Remarks | VARCHAR(1000) | Yes | |
+| CreatedOn | DATETIME2 | No | Set on insert |
 | UpdatedOn | DATETIME2 | No | Updated on every save |
 | CreatedById | VARCHAR(450) | No | FK to Users |
 | UpdatedById | VARCHAR(450) | No | FK to Users |
 
 ### 2.3 Indexing Used
+
+These Indexes has ben created based on Filtering.
+I added these after thinking about the common query patterns — filtering by status and due date is going to happen a lot on the list screen:
+
+| Table | Column | Index | Reason |
+|---|---|---|
+| Users | Username | IX_Users_Username | Filtering by status |
+| Users | Email | IX_Users_Email | Date range filters |
+| Tasks | UserId | IX_Tasks_UserId | "My tasks" type queries |
+| Tasks | Title | IX_Tasks_Title | Search by Title |
+| Tasks | Description | IX_Tasks_Description | Search by Description |
+| Tasks | Status | IX_Tasks_Status | Search by Status |
+| Tasks | DueDate | IX_Tasks_DueDate | Search by DueDate |
+| Tasks | Remarks | IX_Tasks_Remarks | Search by Remark |
+| Tasks | CreatedOn | IX_Tasks_CreatedOn | Search by CreatedOn |
+| Tasks | CreatedBy | FK_Tasks_Users_CreatedBy | Foriegn Key on CreatedBy |
+| Tasks | UpdatedBy | FK_Tasks_Users_CreatedBy | Foriegn Key on UpdatedBy |
 
 ### 2.4 Approach Used
 

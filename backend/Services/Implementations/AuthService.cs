@@ -121,7 +121,7 @@ public class AuthService : IAuthService
             issuer: _config["Jwt:Issuer"],
             audience: _config["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(15), // shorter lifespan
+            expires: DateTime.UtcNow.AddHours(8),
             signingCredentials: creds
         );
 

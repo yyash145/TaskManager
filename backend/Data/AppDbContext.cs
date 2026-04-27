@@ -15,12 +15,44 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // 🔒 Unique Email
+        // TASK INDEXES
+
+        modelBuilder.Entity<TaskItem>()
+            .HasIndex(t => new { t.UserId, t.Title })
+            .IsUnique();
+        
+        modelBuilder.Entity<TaskItem>()
+            .HasIndex(t => t.Description);
+
+        modelBuilder.Entity<TaskItem>()
+            .HasIndex(t => t.UserId);
+
+        modelBuilder.Entity<TaskItem>()
+            .HasIndex(t => t.Status);
+
+        modelBuilder.Entity<TaskItem>()
+            .HasIndex(t => t.DueDate);
+
+        modelBuilder.Entity<TaskItem>()
+            .HasIndex(t => t.Remarks);
+
+        modelBuilder.Entity<TaskItem>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(t => t.CreatedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TaskItem>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(t => t.UpdatedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // USER INDEXES
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
 
-        // 🔒 Unique Username
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Username)
             .IsUnique();

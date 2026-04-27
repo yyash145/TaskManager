@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace backend.Domain.Entities;
 
 public class User
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string Username { get; private set; }
+    [Required]
     public string Email { get; private set; }
     public string PasswordHash { get; private set; }
     public string? RefreshTokenHash { get; set; }
