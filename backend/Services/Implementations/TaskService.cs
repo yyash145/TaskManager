@@ -122,6 +122,12 @@ public class TaskService : ITaskService
                 t.Title.ToLower().Contains(request.Title.ToLower()));
         }
 
+        if (!string.IsNullOrWhiteSpace(request.Description))
+        {
+            query = query.Where(t =>
+                t.Title.ToLower().Contains(request.Description.ToLower()));
+        }
+
         // Filter by Status
         if (request.Status.HasValue)
         {
@@ -137,6 +143,12 @@ public class TaskService : ITaskService
         if (request.DueDate.HasValue)
         {
             query = query.Where(t => t.DueDate >= request.DueDate.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Remarks))
+        {
+            query = query.Where(t =>
+                t.Title.ToLower().Contains(request.Remarks.ToLower()));
         }
 
         return await query
